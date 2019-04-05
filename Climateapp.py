@@ -75,35 +75,17 @@ def welcome():
     """List all available api routes."""
     return (
         f"Available Routes: <br/>"
+        f"------------------------ <br/>"
         f"/api/v1.0/precipitation <br/>"
         f"/api/v1.0/stations <br/>"
         f"/api/v1.0/tobs <br/>"
-        f"/api/v1.0/'2017-01-01' <br/>"
-        f"/api/v1.0/'2017-01-01'/'2017-08-23' <br/>"
+        f"/api/v1.0/2017-01-01 <br/>"
+        f"/api/v1.0/2017-01-01/2017-08-23 <br/>"
     )
 
 
-#--------------------------------
-#     PRECIPITATION ROUTE:      #
-#--------------------------------
 
-# This query creates a list of tuples containing (<date>, <precipitation value>) for dates within a 
-# year prior to the last date data point.
-year_range_query = session.query(Measurement.date, Measurement.prcp).\
-                              filter(Measurement.date.between(str(year_ago_from_latest), str(latest_date_obj))).all()
 
-@app.route("/api/v1.0/precipitation")
-def precipitation():
-# Create an empty dictionary 
-    precipitation_dict = {}
-# Use a for loop to create key-value pairs for the first and second items 
-    for row in year_range_query:
-        precipitation_dict[row[0]] = row[1]
-
-# Return a jsonified list containing a dictionary of our key-value pairs (date - precipitation value) 
-    return jsonify([precipitation_dict])
-
-    
 #--------------------------------
 #         STATIONS ROUTE:       #
 #--------------------------------
@@ -111,35 +93,80 @@ def precipitation():
 # This query creates a list of tuples containing stations from our "stations" table
 stations_tup_list = session.query(Station.station).all()
 
-
-@app.route("/api/v1.0/stations")
-def stations():
-
 # Create an empty list which will hold stations from our "stations" table. 
-    stations_list = []
+stations_list = []
 
 # Use a "for loop" to create a list of station strings
 # for each tuple in station_tup_list append the first element (i.e the station string) to our stations_list
-    for row in stations_tup_list:
-        stations_list.append(row[0])
+for row in stations_tup_list:
+    stations_list.append(row[0])
 
+@app.route("/api/v1.0/stations")
+def stations():
 # Return a jsonified list of stations   
     return jsonify(stations_list)
+
+
+#--------------------------------
+#     PRECIPITATION ROUTE:      #
+#--------------------------------
+
+station_pre_dict = {}
+
+#This "for loop" creates key-value pairings of stations and dictionaries ... which themselves containing key - value pairings of 
+# dates and precipication values specific to each station
+
+for station in stations_list:
+#This query creates a list of tuples containing (<date>, <precipitation value>) for dates within a 
+# year prior to the last date data point for a specific station
+    query = session.query(Measurement.date, Measurement.prcp).\
+            filter(Measurement.date.between(str(year_ago_from_latest), str(latest_date_obj))).\
+                     filter(Measurement.station == station).all()
+
+# Create an empty list used to store (date - precipitation value) key-value pairs 
+    precipitation_dict = {}
+
+# Use a "for loop" to create key-value pairs based on the first and second items of each element in our list of tuples (query)
+    for row in query:
+        precipitation_dict[row[0]] = row[1]
+
+# Create a key-value pair for each station and its corresponding precipitation dictionary 
+    station_pre_dict[station] = precipitation_dict
+
+@app.route("/api/v1.0/precipitation")
+def precipitation():
+# Return a jsonified list containing a our nested dictionaries
+    return jsonify([station_pre_dict])
 
 
 #----------------------------------
 # TEMPERATURE OBSERVATIONS ROUTE: #
 #----------------------------------
 
-# This query creates a list of tuples containing (<station name>, <date>, <temperature observation>) for dates within a 
-# year prior to last date data point.
-year_tobs_query = session.query(Measurement.station, Measurement.date, Measurement.tobs).\
-                              filter(Measurement.date.between(str(year_ago_from_latest), str(latest_date_obj))).all()
+# # This query creates a list of tuples containing (<station name>, <date>, <temperature observation>) for dates within a 
+# # year prior to last date data point.
+# year_tobs_query = session.query(Measurement.station, Measurement.date, Measurement.tobs).\
+#                               filter(Measurement.date.between(str(year_ago_from_latest), str(latest_date_obj))).all()
+# @app.route("/api/v1.0/tobs")
+# def tobs():
+
+# # Return a jsonified list of tuples containing (<station name>, <date>, <temperature observation>) for a year from the last data point
+#     return jsonify(year_tobs_query)
+
+
+temperature_dict = {}
+for station in stations_list:
+    query = session.query(Measurement.date, Measurement.tobs).\
+                filter(Measurement.date.between(str(year_ago_from_latest), str(latest_date_obj))).\
+                    filter(Measurement.station == station).all()
+    temperature_dict[station] = query
+
 @app.route("/api/v1.0/tobs")
 def tobs():
 
 # Return a jsonified list of tuples containing (<station name>, <date>, <temperature observation>) for a year from the last data point
-    return jsonify(year_tobs_query)
+    return jsonify([temperature_dict])
+
 
 
 #--------------------------------
@@ -158,22 +185,30 @@ distinct_dates_list = []
 for tup in distinct_dates:
     distinct_dates_list.append(tup[0])
 
+# @app.route("/api/v1.0/<start>")
+# def start(start):
+#     if start in distinct_dates_list:
+#         temp_data = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+#         filter(Measurement.date >= start).all()
+#         return jsonify(temp_data)
+
+def tester(st):
+    temp_data = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+        filter(Measurement.date >= st).all()
+    return temp_data
+
 @app.route("/api/v1.0/<start>")
 def start(start):
-    if start in distinct_dates_list:
-        temp_data = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
-        filter(Measurement.date >= start).all()
-        return jsonify(temp_data)
-
+    return jsonify(tester(start))
 
 #--------------------------------
 #   (START to END) DATE ROUTE:  #
 #--------------------------------
 
 @app.route("/api/v1.0/<start>/<end>")
-def start_end(start_date, end_date):
-    if start_date in distinct_dates_list and end_date in distinct_dates_list:
-        return jsonify(calc_temps( start_date, end_date))
+def start_end(start, end):
+    if start in distinct_dates_list and end in distinct_dates_list:
+        return jsonify(calc_temps( start, end))
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
