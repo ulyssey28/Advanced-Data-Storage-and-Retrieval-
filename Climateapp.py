@@ -50,7 +50,7 @@ year_ago_from_latest = latest_date_obj - dt.timedelta(days=365)
 
 # Perform a query to retrieve the data and precipitation scores
 year_range_query = session.query(Measurement.date, Measurement.prcp).\
-                              filter(Measurement.date.between(str(year_ago_from_latest), str(latest_date_obj)))
+                              filter(Measurement.date.between(str(year_ago_from_latest), str(latest_date_obj))).all()
 
 
 
@@ -105,24 +105,24 @@ def welcome():
 @app.route("/api/v1.0/precipitation")
 def precipitation():
     precipitation_dict = {}
-    for row in year_range_query.all():
+    for row in year_range_query:
         precipitation_dict[row[0]] = row[1]
     precipitation_dict
     return jsonify(precipitation_dict)
 
+stations_tup_list = session.query(Station.station).all()
 @app.route("/api/v1.0/stations")
 def stations():
     stations_list = []
-    stations_tup_list = session.query(Station.station).all()
     for row in stations_tup_list:
         stations_list.append(row[0])
     return jsonify(stations_list)
 
 
+year_tobs_query = session.query(Measurement.date, Measurement.tobs).\
+                              filter(Measurement.date.between(str(year_ago_from_latest), str(latest_date_obj))).all()
 @app.route("/api/v1.0/tobs")
 def tobs():
-    year_tobs_query = session.query(Measurement.date, Measurement.tobs).\
-                              filter(Measurement.date.between(str(year_ago_from_latest), str(latest_date_obj))).all()
     return jsonify(year_tobs_query)
 
 
