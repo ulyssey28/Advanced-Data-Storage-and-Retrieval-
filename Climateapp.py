@@ -74,13 +74,13 @@ app = Flask(__name__)
 def welcome():
     """List all available api routes."""
     return (
-        f"Available Routes: <br/>"
+        f"<h1>Available Routes: </h1><br/>"
         f"------------------------ <br/>"
-        f"/api/v1.0/precipitation <br/>"
-        f"/api/v1.0/stations <br/>"
-        f"/api/v1.0/tobs <br/>"
-        f"/api/v1.0/2017-01-01 <br/>"
-        f"/api/v1.0/2017-01-01/2017-08-23 <br/>"
+        f"<a href=\"http://127.0.0.1:5000/api/v1.0/precipitation \" target=\"_blank\">http://127.0.0.1:5000/api/v1.0/precipitation</a> <br/>"
+        f"<a href=\"http://127.0.0.1:5000/api/v1.0/stations \" target=\"_blank\">http://127.0.0.1:5000/api/v1.0/stations</a> <br/>"
+        f"<a href=\"http://127.0.0.1:5000/api/v1.0/tobs \" target=\"_blank\">http://127.0.0.1:5000/api/v1.0/tobs </a> <br/>"
+        f"<a href=\"http://127.0.0.1:5000/api/v1.0/2017-01-01  \" target=\"_blank\">http://127.0.0.1:5000/api/v1.0/2017-01-01  </a> <br/>"
+        f"<a href=\"http://127.0.0.1:5000/api/v1.0/2017-01-01/2017-08-23   \" target=\"_blank\">http://127.0.0.1:5000/api/v1.0/2017-01-01/2017-08-23   </a> <br/>"
     )
 
 
