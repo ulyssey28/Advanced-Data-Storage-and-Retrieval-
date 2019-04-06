@@ -75,7 +75,6 @@ def welcome():
     """List all available api routes."""
     return (
         f"<h1>Available Routes: </h1><br/>"
-        f"------------------------ <br/>"
         f"<a href=\"http://127.0.0.1:5000/api/v1.0/precipitation \" target=\"_blank\">http://127.0.0.1:5000/api/v1.0/precipitation</a> <br/>"
         f"<a href=\"http://127.0.0.1:5000/api/v1.0/stations \" target=\"_blank\">http://127.0.0.1:5000/api/v1.0/stations</a> <br/>"
         f"<a href=\"http://127.0.0.1:5000/api/v1.0/tobs \" target=\"_blank\">http://127.0.0.1:5000/api/v1.0/tobs </a> <br/>"
@@ -192,10 +191,12 @@ def tobs():
 
 @app.route("/api/v1.0/<start>/")
 def start(start):
+#This query produces a list containing a tuple with minimum temperature, average temperature, and maximum temperature from the "measurement" table
+# based on dates equal to or greater than (i.e past) the specified date
     query = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
         filter(Measurement.date >= start).all()
 
-# Return the dictionary value corresponding to the specified date
+# Return jsonified list 
     return jsonify(query)
 
 
@@ -209,6 +210,9 @@ def start(start):
 
 @app.route("/api/v1.0/<start>/<end>/")
 def start_end(start, end):
+
+# the calc_temps function produces a list containing a tuple with minimum temperature, average temperature, and maximum temperature from the "measurement" table
+# based dates between the start and end dates
     return jsonify(calc_temps( start, end))
 
 
