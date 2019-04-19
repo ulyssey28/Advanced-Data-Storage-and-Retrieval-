@@ -25,7 +25,7 @@ To begin, I used Python and SQLAlchemy to perform basic climate analysis and dat
 
 * Plotted the results using the DataFrame `plot` method.
 
-![precipitation](Climate Analysis/Images%20and%20Markdown%20Notebook/output_18_0.png)
+![precipitation](Climate%20Analysis/Images%20and%20Markdown%20Notebook/output_18_0.png)
 
 * Use Pandas to print the summary statistics for the precipitation data.
 
@@ -45,7 +45,7 @@ To begin, I used Python and SQLAlchemy to perform basic climate analysis and dat
 
   * Plotted the results as a histogram with `bins=12`.
   
-![station](Climate Analysis/Images%20and%20Markdown%20Notebook/output_30_1.png)
+![station](Climate%20Analysis/Images%20and%20Markdown%20Notebook/output_30_1.png)
 
 ### Temperature Analysis 
 
@@ -59,7 +59,7 @@ To begin, I used Python and SQLAlchemy to perform basic climate analysis and dat
 
   * Used the peak-to-peak (tmax-tmin) value as the y error bar (yerr).
 
-![Temperature](Climate Analysis/Images%20and%20Markdown%20Notebook/output_36_0.png)
+![Temperature](Climate%20Analysis/Images%20and%20Markdown%20Notebook/output_36_0.png)
 
 ### Additional Analysis 
 
@@ -75,7 +75,7 @@ To begin, I used Python and SQLAlchemy to perform basic climate analysis and dat
 
   * Used Pandas to plot an area plot (`stacked=False`) for the daily normals.
   
-  ![areaplot](Climate Analysis/Images%20and%20Markdown%20Notebook/output_47_1.png)
+  ![areaplot](Climate%20Analysis/Images%20and%20Markdown%20Notebook/output_47_1.png)
   
   
 
