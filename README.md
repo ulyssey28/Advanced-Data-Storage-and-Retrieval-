@@ -73,7 +73,7 @@ To begin, I used Python and SQLAlchemy to perform basic climate analysis and dat
 
   * Loaded the list of daily normals into a Pandas DataFrame and set the index equal to the date.
 
-  * Used Pandas to plot an area plot (`stacked=False`) for the daily normals.
+  * Used Pandas dataframes to plot an area plot (`stacked=False`) for the daily normals.
   
   ![areaplot](Climate%20Analysis/Images%20and%20Markdown%20Notebook/output_47_1.png)
   
